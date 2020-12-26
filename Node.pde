@@ -1,3 +1,5 @@
+float min=0;
+float max=1;
 class Node
 {
   float[] weights;
@@ -61,7 +63,11 @@ class Node
       float ran=random(1);
       if (ran<mutation_rate)
       {
-        mutated.weights[i]=random(-1, 1);
+        mutated.weights[i]=weights[i]*(1+random(-mutationStrength,mutationStrength));
+        constrain(mutated.weights[i],-1,1);
+        float r=random(1);
+        if(r<mutationNew)
+        mutated.weights[i]=random(-1,1);
       } else
       {
         mutated.weights[i]=weights[i];

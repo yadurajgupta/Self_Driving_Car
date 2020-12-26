@@ -19,34 +19,41 @@ class Car
     mutation=mut;
     pos.set(P.x, P.y);
     vel.set(0, 0);
+    Boundary next=checkpoints.get(1);
+    PVector nextCheck=new PVector(next.A.x+next.B.x,next.A.y+next.B.y);
+    vel.set(nextCheck.sub(pos));
+    vel.setMag(1);
     acc.set(0, 0);
     net =new Network(networkSize, inputs, mutation);
     for (int i=0; i<inputs; i++)
     {
-      float ang=map(i, 0, inputs-1, -PI/2, PI/2);
+      float ang=map(i, 0, inputs-1, -angofvision/2.0, +angofvision/2.0);
       rays.add(new Ray(pos, ang));
     }
   }
   void show()
   {
-    //if (lifespan!=0)
-    //{
+    if (!collided)
+    {
       pushMatrix();
       translate(pos.x, pos.y);
       rotate(atan2(vel.y, vel.x));
       noStroke();
-      fill(carcol);
+      if (demo)
+        fill(carcoldemo);
+      else
+        fill(carcol);
       beginShape();
       vertex(0, 0);
       vertex(-carsize*cos(carang), carsize*sin(carang));
       vertex(-carsize*cos(carang), -carsize*sin(carang));
       endShape();
       popMatrix();
-      if (!collided && !finished && checkpoint!=null)
+      if (!collided && !finished && checkpoint!=null && showCheckpoints)
       {
-        //checkpoint.checkpointshow();
+        checkpoint.checkpointshow();
       }
-    //}
+    }
   }
   void update()
   {
@@ -68,7 +75,7 @@ class Car
           {
             checkpoint=null;
             finished=true;
-            lifetime*=20;
+            checkpointindex*=10;
           }
         }
       }
@@ -80,6 +87,29 @@ class Car
       }
     }
   }
+  void showRays()
+  {
+    if (!collided && !finished)
+    {
+      noFill();
+      colorMode(HSB);
+      stroke(250, 255, 255);
+      strokeWeight(2);
+      arc(pos.x, pos.y, VIS, VIS, atan2(vel.y, vel.x)-angofvision/2.0, atan2(vel.y, vel.x)+angofvision/2.0, PIE);
+      strokeWeight(3);
+      colorMode(HSB);
+      stroke(145, 255, 255);
+      for (Ray r : rays)
+      {
+        r.show();
+      }
+      noFill();
+      colorMode(HSB);
+      stroke(250, 255, 255);
+      strokeWeight(2);
+      arc(pos.x, pos.y, VIS, VIS, atan2(vel.y, vel.x)-angofvision/2.0, atan2(vel.y, vel.x)+angofvision/2.0);
+    }
+  }
   void find_rays(ArrayList<Boundary> B)
   {
     float []inp=new float[rays.size()];
@@ -88,6 +118,7 @@ class Car
     {
       r.dir.rotate(atan2(vel.y, vel.x));
       PVector end=r.give_Closest_intersection(B);
+      r.end=end;
       r.dir.rotate(-atan2(vel.y, vel.x));
       if (end!=null)
       {
@@ -98,9 +129,6 @@ class Car
         }
         float in=map(dist, 0, VIS/2.0, 1, 0);
         inp[count++]=in;
-        //stroke(255);
-        //strokeWeight(1);
-        //line(pos.x, pos.y, end.x, end.y);
       } else
       {
         inp[count++]=0;

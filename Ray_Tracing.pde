@@ -4,10 +4,12 @@ class Ray
   PVector start;
   PVector dir;
   float ans=0;
+  PVector end;
   Ray(PVector P, float ang_)
   {
     start=P;
     dir=PVector.fromAngle(ang_);
+    end=new PVector();
   }
   void rotate(float ang)
   {
@@ -77,5 +79,16 @@ class Ray
   void update(PVector p)
   {
     start.set(p);
+  }
+  void setEnd(PVector P)
+  {
+    end.set(P);
+  }
+  void show()
+  {
+    if (start!=null && end!=null)
+    {
+      line(start.x, start.y, end.x, end.y);
+    }
   }
 }

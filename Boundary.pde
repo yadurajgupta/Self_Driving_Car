@@ -21,14 +21,14 @@ class Boundary
   void show()
   {
     stroke(255);
-    strokeWeight(1);
+    strokeWeight(2);
     line(A.x, A.y, B.x, B.y);
   }
   void checkpointshow()
   {
     colorMode(HSB);
     stroke(70, 255, 255);
-    strokeWeight(1);
+    strokeWeight(2);
     line(A.x, A.y, B.x, B.y);
   }
   void goalshow()

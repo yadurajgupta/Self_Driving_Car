@@ -7,6 +7,7 @@ float x_offset=10;
 float y_offset=10;
 float acc_radius;    //SIZE OF THE LOOP
 float track_thickness=50;
+Boundary end;
 //7 times the Width
 
 
@@ -26,8 +27,8 @@ void make_track()
   outerbounds.clear();
   checkpoints.clear();
   bounds.clear();
-  x_offset+=random(1);
-  y_offset+=random(1);
+  x_offset+=random(10);
+  y_offset+=random(10);
   for (int i=0; i<resolution; i++)
   {
     float ang=map(i, 0, resolution, 0, 2*PI);
