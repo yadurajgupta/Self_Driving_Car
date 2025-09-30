@@ -50,9 +50,6 @@ class Bird
       inputsArr[idx++] = map(p.topHeight - pos.y, -height , height , 0 ,1);
       inputsArr[idx++] = map(p.bottomHeight - pos.y , -height , height , 0 ,1);
     }
-    
-    
-
     //if(closest + 1 < PILARS.size())
     //{
     //  Pillar p = PILARS.get(closest +1);

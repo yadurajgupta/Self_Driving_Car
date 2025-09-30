@@ -13,7 +13,7 @@ class Pillar {
   Pillar(float start) {
     x = start; 
     topHeight = random(height - gap - 100);
-    //topHeight = constrain(topHeight , height /4 , 3 * height /4);
+      topHeight = constrain(topHeight , height /4 , 3 * height /4);
     bottomHeight = height - (topHeight + gap); 
   }
 
@@ -28,6 +28,7 @@ class Pillar {
       fill(0, 255, 0); 
     noStroke();
     rect(x, 0, pillarWidth, topHeight);
+    //circle(x,0,100);
     rect(x, height - bottomHeight, pillarWidth, bottomHeight);
   }
 

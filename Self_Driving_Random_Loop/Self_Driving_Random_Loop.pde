@@ -1,37 +1,12 @@
-////CAR VARIABLES
-ArrayList<Car> cars=new ArrayList<Car>();              //LIST OF CARS
-float VIS=100;                                         //VISION OF CAR HOW FAR CAN IT SEE
-float carsize;                                         //SIZE OF CAR
-float carang;                                          //SHAPE OF CAR
-color carcol;                                          //COLOR OF CAR
-color carcoldemo;                                      //COLOR OF CAR IN DEMO MODE
-float speed=1;                                         //SPEED OF THE CAR
-PVector start;                                         //STARTING POINT OF THE CARS
-float angofvision=0.6*PI;                              //ANGEL OF VISION OF DRIVER
-
-
-//NEURAL NETWORK VARIABLES
 int inputs=7;                                          //INPUT TO THE NETWORK
-int carnum=50;                                         //GENERATION SIZE
-
 int[] networkSize={inputs + 1, inputs + 1, 1};                           //NETWORK STRUCTURE
 
-float forcemag=0.1;                                    //LIKE LEARNING CONSTANT
 float mutation=0.01;                                   //NUMBER OF RANDOM CARS IN NEW GENERATION
 float mutationStrength=0.1;
 float mutationNew=0.3;        
-int step=1;                                            //TIME STEP IN SIMULATION
-int LIFESPAN=70;                                      //AMOUNT OF TIME THE CAR CAN LIVE
-boolean demo=false;                                    //ONLY SHOWING THE BEST CAR IN THE GENERATION
-boolean showrays=false;                                //SHOW RAYS
-boolean showCheckpoints=true;                          //SHOW CHECKPOINTS
-boolean atleastonefinished=false;                      
-int Generation=1;
-int stepLowerLimit=1;
-int stepUpperLimit=200;
-
 int OFFSET_WIDTH = 0;
 int OFFSET_HEIGHT = 0;
+int BATCH_SIZE = 1;
 
 PVector birdStart;
 PVector birdVel;
@@ -91,6 +66,7 @@ void generatePillars()
   PILARS.add(new Pillar(width/4));
   PILARS.add(new Pillar(width/2));
   PILARS.add(new Pillar(3*width/4));
+  PILARS.add(new Pillar(width));
   PILLAR_COUNT = 3;
   baseFrame = frameCount;
 }
@@ -107,29 +83,42 @@ void setup()
 
 
 void draw() {
-  for(Bird bird:BIRDS)
+  for(int i=0;i<BATCH_SIZE;i++)
   {
-    if(!bird.alive) continue;
-    bird.update();
-  }
-  if ((baseFrame + frameCount) % 120 == 0) {
-    PILARS.add(new Pillar());
-    PILLAR_COUNT++;
-  }
-  ArrayList<Pillar> toRemove = new ArrayList<>();
-  for(Pillar p : PILARS)
-  {
-    if (p.isOffscreen()) {
-      toRemove.add(p);
-      continue;
+    for(Bird bird:BIRDS)
+    {
+      if(!bird.alive) continue;
+      bird.update();
     }
-    p.update();
+    ArrayList<Pillar> toRemove = new ArrayList<>();
+    for(Pillar p : PILARS)
+    {
+      if (p.isOffscreen()) {
+        toRemove.add(p);
+        continue;
+      }
+      p.update();
+    }
+    
+  
+    BIRD_ALIVE_COUNT = getBirdAliveCount();
+    
+      
+    //BIRDS.removeAll(toRemoveBirds);
+    
+    PILARS.removeAll(toRemove);
+    for(int X=0;X<toRemove.size();X++){
+      PILARS.add(new Pillar());
+      PILLAR_COUNT++;
+    }
+    if(BIRD_ALIVE_COUNT ==0)
+    {
+      generatePillars();
+      single_parent_next_generation();
+      GENERATION_COUNT++;
+    }
   }
-  
-
-  BIRD_ALIVE_COUNT = getBirdAliveCount();
-  
-    if(!crunchMode){
+  if(!crunchMode){
     background(0);
     for(Bird bird:BIRDS)
     {
@@ -141,16 +130,12 @@ void draw() {
     {
       p.show();
     }
+    showStats();
   }
-  //BIRDS.removeAll(toRemoveBirds);
-  PILARS.removeAll(toRemove);
-  if(BIRD_ALIVE_COUNT ==0)
+  if(frameCount % 100==0)
   {
-    generatePillars();
-    single_parent_next_generation();
-    GENERATION_COUNT++;
+    println("FaremRate " + new Float(frameRate).toString() + " Generation Count " + new Float(GENERATION_COUNT).toString() + " Birds Alive " + new Float(BIRD_ALIVE_COUNT).toString() + " HighScore " + new Float(PILLAR_COUNT).toString());
   }
-  println("FaremRate " + new Float(frameRate).toString() + " Generation Count " + new Float(GENERATION_COUNT).toString() + " Birds Alive " + new Float(BIRD_ALIVE_COUNT).toString());
 }
 
 int getBirdAliveCount()
@@ -166,6 +151,14 @@ int getBirdAliveCount()
 } 
 void keyPressed()
 {
+  if(keyCode==UP)
+  {
+     BATCH_SIZE++;
+  }
+  if(keyCode==DOWN)
+  {
+     BATCH_SIZE--;
+  }
   if(key=='r')
   {
     generateBirds();
@@ -189,10 +182,11 @@ void showStats()
   }
   pushMatrix();
   float textSize=20;
+  translate(0,textSize);
   textSize(textSize);
   fill(255);
   textAlign(LEFT, TOP);
-  text("Generation "+GENERATION_COUNT, -width/2, -height/2);
+  text("Generation "+GENERATION_COUNT, 0, 0);
   String NetworkStructure="Network Structure "+inputs+"->";
   for (int i=0; i<networkSize.length; i++)
   {
@@ -201,9 +195,9 @@ void showStats()
     else
       NetworkStructure+=networkSize[i];
   }
-  text(NetworkStructure, -width/2, -height/2+textSize);
-  text("Speed " +step+"x", -width/2, -height/2+2*textSize);
-  text("Inputs " +inputs, -width/2, -height/2+3*textSize);
-  text("Still Alive "+stillalive+"/"+cars.size(), -width/2, -height/2+4*textSize);
+  text(NetworkStructure, 0, 0+textSize);
+  text("Still Alive "+stillalive+"/"+BIRDS.size(), 0, 0+2*textSize);
+  text("Current Pillars "+PILLAR_COUNT, 0, 0+3*textSize);
+  text("Batch Size "+BATCH_SIZE, 0, 0+4*textSize);
   popMatrix();
 } //<>//
