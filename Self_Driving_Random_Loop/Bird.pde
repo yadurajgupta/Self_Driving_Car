@@ -1,7 +1,7 @@
 class Bird
 {
   PVector pos,vel, acc;
-  int size = 75;
+  int size = 50;
   Integer maxVelocity = 20;
   PVector jumpAcc = new PVector(0,-maxVelocity);  
   boolean alive;

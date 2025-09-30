@@ -132,10 +132,7 @@ void draw() {
     }
     showStats();
   }
-  if(frameCount % 100==0)
-  {
-    println("FaremRate " + new Float(frameRate).toString() + " Generation Count " + new Float(GENERATION_COUNT).toString() + " Birds Alive " + new Float(BIRD_ALIVE_COUNT).toString() + " HighScore " + new Float(PILLAR_COUNT).toString());
-  }
+  println("FaremRate " + new Float(frameRate).toString() + " Generation Count " + new Float(GENERATION_COUNT).toString() + " Birds Alive " + new Float(BIRD_ALIVE_COUNT).toString() + " HighScore " + new Float(PILLAR_COUNT).toString()+ " Step Count Per Frame " + new Float(BATCH_SIZE).toString());
 }
 
 int getBirdAliveCount()
@@ -198,6 +195,6 @@ void showStats()
   text(NetworkStructure, 0, 0+textSize);
   text("Still Alive "+stillalive+"/"+BIRDS.size(), 0, 0+2*textSize);
   text("Current Pillars "+PILLAR_COUNT, 0, 0+3*textSize);
-  text("Batch Size "+BATCH_SIZE, 0, 0+4*textSize);
+  text("Step Count Per Frame "+BATCH_SIZE, 0, 0+4*textSize);
   popMatrix();
 } //<>//
